@@ -16,7 +16,11 @@ public class Main {
                 if (command.length == 2) {
                     int status = Integer.parseInt(command[1]);
                     exit(status);
+                    break;
                 }
+            } else if (command[0].equals("echo")) {
+                System.out.println(input);
+                break;
             }
 
             invalidCommand(input);
