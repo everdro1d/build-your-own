@@ -18,6 +18,15 @@ public class Main {
                 break;
             }
 
+            if (!input.trim().contains(" ")) {
+                if (!builtinList.contains(input)) {
+                    invalidCommand(input);
+                    continue;
+                }
+                System.out.println(input + ": needs args");
+                continue;
+            }
+
             String[] command = input.split(" ");
             switch (command[0]) {
                 case "exit" -> {
@@ -35,11 +44,15 @@ public class Main {
                     if (command.length == 2 && builtinList.contains(command[1])) {
                         System.out.println(command[1] + " is a shell builtin");
                         continue;
+                    } else if (!builtinList.contains(command[1])) {
+                        System.out.println(command[1] + ": not found");
+                        continue;
                     }
                 }
+                default -> invalidCommand(command[0]);
             }
 
-            invalidCommand(input);
+            invalidCommand(command[0]);
         }
     }
 
