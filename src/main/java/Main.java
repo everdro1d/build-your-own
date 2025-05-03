@@ -7,7 +7,7 @@ public class Main {
         while (true) {
             String input = scanner.nextLine();
             if (input.isEmpty()) {
-                System.out.print("$ ");
+                System.out.println("$ ");
                 break;
             }
             System.out.print("$ ");
