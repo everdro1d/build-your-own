@@ -32,8 +32,8 @@ public class Main {
                     continue;
                 }
                 case "type" -> {
-                    if (command.length == 2 && builtinList.contains(command[0])) {
-                        System.out.println(command[0] + " is a shell builtin");
+                    if (command.length == 2 && builtinList.contains(command[1])) {
+                        System.out.println(command[1] + " is a shell builtin");
                         continue;
                     }
                 }
