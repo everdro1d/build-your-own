@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -45,6 +46,9 @@ public class Main {
                         System.out.println(command[1] + " is a shell builtin");
                         continue;
                     } else if (!builtinList.contains(command[1])) {
+                        if (typeExecutableCheck(command[1])) {
+                            continue;
+                        }
                         System.out.println(command[1] + ": not found");
                         continue;
                     }
@@ -70,5 +74,37 @@ public class Main {
             b.append(command[i]).append(" ");
         }
         System.out.println(b.toString().trim());
+    }
+
+    private static boolean typeExecutableCheck(String execName) {
+        String path = System.getenv("PATH");
+        if (path == null) {
+            System.out.println("PATH is null");
+            return false;
+        }
+
+        String[] bins;
+        if (path.contains(":")) {
+            bins = path.split(":");
+        } else {
+            bins = new String[] { path };
+        }
+
+        for (String bin : bins) {
+            File f = new File(bin);
+            File[] execFiles = f.listFiles(File::canExecute);
+            if (execFiles == null) {
+                continue;
+            }
+
+            for (File file : execFiles) {
+                if (file.getName().equals(execName)) {
+                    System.out.println(execName + " is " + file.getAbsolutePath());
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
