@@ -10,7 +10,24 @@ public class Main {
             if (input.isBlank()) {
                 break;
             }
-            System.out.println(input + ": command not found");
+
+            String[] command = input.split(" ");
+            if (command[0].equals("exit")) {
+                if (command.length == 2) {
+                    int status = Integer.parseInt(command[1]);
+                    exit(status);
+                }
+            }
+
+            invalidCommand(input);
         }
+    }
+
+    private static void invalidCommand(String input) {
+        System.out.println(input + ": command not found");
+    }
+
+    private static void exit(int status) {
+        System.exit(status);
     }
 }
