@@ -11,7 +11,6 @@ public class Main {
                 System.out.println("$ ");
                 break;
             }
-            System.out.print("$ ");
             System.out.println(input + ": command not found");
         }
     }
