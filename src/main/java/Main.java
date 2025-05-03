@@ -1,9 +1,16 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
+    private static ArrayList<String> builtinList = new ArrayList<>(Arrays.asList(
+            "echo", "exit", "type"
+    ));
+
     public static void main(String[] args) throws Exception {
 
         Scanner scanner = new Scanner(System.in);
+        whileLabel:
         while (true) {
             System.out.print("$ ");
             String input = scanner.nextLine();
@@ -12,15 +19,24 @@ public class Main {
             }
 
             String[] command = input.split(" ");
-            if (command[0].equals("exit")) {
-                if (command.length == 2) {
-                    int status = Integer.parseInt(command[1]);
-                    exit(status);
-                    break;
+            switch (command[0]) {
+                case "exit" -> {
+                    if (command.length == 2) {
+                        int status = Integer.parseInt(command[1]);
+                        exit(status);
+                        break whileLabel;
+                    }
                 }
-            } else if (command[0].equals("echo")) {
-                echo(command);
-                continue;
+                case "echo" -> {
+                    echo(command);
+                    continue;
+                }
+                case "type" -> {
+                    if (command.length == 2 && builtinList.contains(command[0])) {
+                        System.out.println(command[0] + " is a shell builtin");
+                        continue;
+                    }
+                }
             }
 
             invalidCommand(input);
