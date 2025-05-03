@@ -7,10 +7,10 @@ public class Main {
         while (true) {
             String input = scanner.nextLine();
             System.out.print("$ ");
+            System.out.println(input + ": command not found");
             if (input.isEmpty()) {
                 break;
             }
-            System.out.println(input + ": command not found");
         }
     }
 }
