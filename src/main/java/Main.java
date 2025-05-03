@@ -19,7 +19,7 @@ public class Main {
                     break;
                 }
             } else if (command[0].equals("echo")) {
-                System.out.println(input);
+                echo(command);
                 break;
             }
 
@@ -33,5 +33,13 @@ public class Main {
 
     private static void exit(int status) {
         System.exit(status);
+    }
+
+    private static void echo(String[] command) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 1 ; i < command.length ; i++) {
+            b.append(command[i]).append(" ");
+        }
+        System.out.println(b.toString().trim());
     }
 }
