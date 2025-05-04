@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
-    private static ArrayList<String> builtinList = new ArrayList<>(Arrays.asList(
+    private static final ArrayList<String> builtinList = new ArrayList<>(Arrays.asList(
             "echo", "exit", "type"
     ));
 
@@ -16,16 +16,19 @@ public class Main {
             System.out.print("$ ");
             String input = scanner.nextLine();
             if (input.isBlank()) {
-                break;
+                continue;
             }
 
             if (!input.trim().contains(" ")) {
-                if (!builtinList.contains(input)) {
+                if (!builtinList.contains(input) && !isExecInPath(input)) {
                     invalidCommand(input);
                     continue;
                 }
-                System.out.println(input + ": needs args");
-                continue;
+
+                if (!isExecInPath(input)) {
+                    System.out.println(input + ": needs args");
+                    continue;
+                }
             }
 
             String[] command = input.split(" ");
@@ -46,14 +49,21 @@ public class Main {
                         System.out.println(command[1] + " is a shell builtin");
                         continue;
                     } else if (!builtinList.contains(command[1])) {
-                        if (typeExecutableCheck(command[1])) {
+                        if (isExecInPath(command[1])) {
+                            System.out.println(command[1] + " is " + getExecPathInBin(command[1]));
                             continue;
                         }
                         System.out.println(command[1] + ": not found");
                         continue;
                     }
                 }
-                default -> invalidCommand(command[0]);
+                default -> {
+                    if (isExecInPath(command[0])) {
+                        runExecutable(command);
+                        continue;
+                    }
+                    invalidCommand(command[0]);
+                }
             }
 
             invalidCommand(command[0]);
@@ -69,18 +79,26 @@ public class Main {
     }
 
     private static void echo(String[] command) {
-        StringBuilder b = new StringBuilder();
-        for (int i = 1 ; i < command.length ; i++) {
-            b.append(command[i]).append(" ");
-        }
-        System.out.println(b.toString().trim());
+        System.out.println(getArgsAsString(command));
     }
 
-    private static boolean typeExecutableCheck(String execName) {
+    private static String getArgsAsString(String[] command) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 1; i < command.length ; i++) {
+            b.append(command[i]).append(" ");
+        }
+        return b.toString().trim();
+    }
+
+    private static boolean isExecInPath(String execName) {
+        return (getExecPathInBin(execName) != null);
+    }
+
+    private static String getExecPathInBin(String execName) {
         String path = System.getenv("PATH");
         if (path == null) {
-            System.out.println("PATH is null");
-            return false;
+            System.err.println("PATH is null");
+            return null;
         }
 
         String[] bins;
@@ -99,12 +117,27 @@ public class Main {
 
             for (File file : execFiles) {
                 if (file.getName().equals(execName)) {
-                    System.out.println(execName + " is " + file.getAbsolutePath());
-                    return true;
+                    return file.getAbsolutePath();
                 }
             }
         }
 
-        return false;
+        return null;
+    }
+
+    private static void runExecutable(String[] execWithArgs) {
+        ProcessBuilder pb = new ProcessBuilder(new ArrayList<>(Arrays.asList(execWithArgs)));
+        pb.redirectInput(ProcessBuilder.Redirect.PIPE);
+        try {
+            Process p = pb.start();
+            Scanner i = new Scanner(p.getInputStream());
+            while (i.hasNextLine()) {
+                System.out.println(i.nextLine());
+            }
+
+            p.waitFor();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
