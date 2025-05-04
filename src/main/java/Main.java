@@ -1,11 +1,12 @@
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
     private static final ArrayList<String> builtinList = new ArrayList<>(Arrays.asList(
-            "echo", "exit", "type"
+            "echo", "exit", "type", "pwd"
     ));
 
     public static void main(String[] args) throws Exception {
@@ -56,6 +57,10 @@ public class Main {
                         System.out.println(command[1] + ": not found");
                         continue;
                     }
+                }
+                case "pwd" -> {
+                    System.out.println(Paths.get("").toAbsolutePath());
+                    continue;
                 }
                 default -> {
                     if (isExecInPath(command[0])) {
