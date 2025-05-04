@@ -25,11 +25,6 @@ public class Main {
                     invalidCommand(input);
                     continue;
                 }
-
-                if (!isExecInPath(input)) {
-                    System.out.println(input + ": needs args");
-                    continue;
-                }
             }
 
             String[] command = input.split(" ");
