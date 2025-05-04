@@ -59,6 +59,8 @@ public class Main {
                 case "cd" -> {
                     if (command.length == 2) {
                         changeDirectory(command[1]);
+                    } else if (command.length == 1) {
+                        changeDirectory("");
                     }
                     continue;
                 }
@@ -92,6 +94,12 @@ public class Main {
     }
 
     private static void changeDirectory(String path) {
+        if (path.isBlank()) {
+            path = System.getProperty("user.home");
+        } else if (path.startsWith("~")) {
+            path = System.getProperty("user.home") + File.separator + path.replaceFirst("~", "");
+        }
+
         if (path.startsWith("../")) {
             String[] strArr = path.split("/");
 
