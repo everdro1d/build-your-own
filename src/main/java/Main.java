@@ -1,6 +1,5 @@
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -93,7 +92,24 @@ public class Main {
     }
 
     private static void changeDirectory(String path) {
-        if (path.startsWith("..")) {
+        if (path.startsWith("../")) {
+            String[] strArr = path.split("/");
+
+            int occurences = 0;
+            for (String s : strArr) {
+                if (s.equals("..")) {
+                    occurences++;
+                } else {
+                    break;
+                }
+            }
+            Path p = Path.of(getWorkingDirectory());
+            for (int i = 0; i < occurences; i++) {
+                p = p.getParent();
+            }
+
+            path = p.toAbsolutePath().toString();
+        } else if (path.startsWith("..")) {
             path = Path.of(getWorkingDirectory()).getParent().toString();
         } else if (path.startsWith(".")) {
             path = getWorkingDirectory() + File.separator + path.replaceFirst(".", "");
@@ -113,7 +129,6 @@ public class Main {
 
         System.setProperty("user.dir", f.getAbsolutePath());
     }
-
 
     private static String getArgsAsString(String[] command) {
         StringBuilder b = new StringBuilder();
@@ -160,6 +175,7 @@ public class Main {
 
     private static void runExecutable(String[] execWithArgs) {
         ProcessBuilder pb = new ProcessBuilder(new ArrayList<>(Arrays.asList(execWithArgs)));
+        pb.directory(new File(getWorkingDirectory()));
         pb.redirectInput(ProcessBuilder.Redirect.PIPE);
         try {
             Process p = pb.start();
