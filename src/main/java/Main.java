@@ -1,4 +1,5 @@
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,7 +7,7 @@ import java.util.Scanner;
 
 public class Main {
     private static final ArrayList<String> builtinList = new ArrayList<>(Arrays.asList(
-            "echo", "exit", "type", "pwd"
+            "echo", "exit", "type", "pwd", "cd"
     ));
 
     public static void main(String[] args) throws Exception {
@@ -43,18 +44,23 @@ public class Main {
                 case "type" -> {
                     if (command.length == 2 && builtinList.contains(command[1])) {
                         System.out.println(command[1] + " is a shell builtin");
-                        continue;
                     } else if (!builtinList.contains(command[1])) {
                         if (isExecInPath(command[1])) {
                             System.out.println(command[1] + " is " + getExecPathInBin(command[1]));
                             continue;
                         }
                         System.out.println(command[1] + ": not found");
-                        continue;
                     }
+                    continue;
                 }
                 case "pwd" -> {
-                    System.out.println(Paths.get("").toAbsolutePath());
+                    System.out.println(getWorkingDirectory());
+                    continue;
+                }
+                case "cd" -> {
+                    if (command.length == 2) {
+                        changeDirectory(command[1]);
+                    }
                     continue;
                 }
                 default -> {
@@ -81,6 +87,25 @@ public class Main {
     private static void echo(String[] command) {
         System.out.println(getArgsAsString(command));
     }
+
+    private static String getWorkingDirectory() {
+        return System.getProperty("user.dir");
+    }
+
+    private static void changeDirectory(String path) {
+        File f = new File(path);
+        if (!f.exists()) {
+            System.out.println("cd: " + path + ": No such file or directory");
+            return;
+        }
+
+        if (!f.isDirectory()) {
+            f = f.getParentFile();
+        }
+
+        System.setProperty("user.dir", f.getAbsolutePath());
+    }
+
 
     private static String getArgsAsString(String[] command) {
         StringBuilder b = new StringBuilder();
