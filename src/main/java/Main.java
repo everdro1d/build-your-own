@@ -93,6 +93,14 @@ public class Main {
     }
 
     private static void changeDirectory(String path) {
+        if (path.startsWith("..")) {
+            path = Path.of(getWorkingDirectory()).getParent().toString();
+        } else if (path.startsWith(".")) {
+            path = getWorkingDirectory() + File.separator + path.replaceFirst(".", "");
+        } else if (!path.startsWith("/")) {
+            path = getWorkingDirectory() + File.separator + path;
+        }
+
         File f = new File(path);
         if (!f.exists()) {
             System.out.println("cd: " + path + ": No such file or directory");
