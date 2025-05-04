@@ -15,12 +15,13 @@ public class Main {
         whileLabel:
         while (true) {
             System.out.print("$ ");
-            String input = scanner.nextLine();
+            String input = scanner.nextLine().trim();
+
             if (input.isBlank()) {
                 continue;
             }
 
-            if (!input.trim().contains(" ")) {
+            if (!input.contains(" ")) {
                 if (!builtinList.contains(input) && !isExecInPath(input)) {
                     invalidCommand(input);
                     continue;
@@ -95,9 +96,9 @@ public class Main {
 
     private static void changeDirectory(String path) {
         if (path.isBlank()) {
-            path = System.getProperty("user.home");
+            path = getUserHomeDirectory();
         } else if (path.startsWith("~")) {
-            path = System.getProperty("user.home") + File.separator + path.replaceFirst("~", "");
+            path = getUserHomeDirectory() + File.separator + path.replaceFirst("~", "");
         } else if (path.startsWith("../")) {
             String[] strArr = path.split("/");
 
@@ -134,6 +135,17 @@ public class Main {
         }
 
         System.setProperty("user.dir", f.getAbsolutePath());
+    }
+
+    private static String getUserHomeDirectory() {
+        String path;
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            path = System.getenv("USERPROFILE");
+        } else {
+            path = System.getenv("HOME");
+        }
+
+        return path;
     }
 
     private static String getArgsAsString(String[] command) {
