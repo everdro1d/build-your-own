@@ -98,9 +98,7 @@ public class Main {
             path = System.getProperty("user.home");
         } else if (path.startsWith("~")) {
             path = System.getProperty("user.home") + File.separator + path.replaceFirst("~", "");
-        }
-
-        if (path.startsWith("../")) {
+        } else if (path.startsWith("../")) {
             String[] strArr = path.split("/");
 
             int occurences = 0;
